@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import APP_NAME, APP_ENV, DEBUG
 from app.logger import setup_logger
-
+from app.routes.market_data import router as market_data_router
 
 logger = setup_logger()
 
@@ -13,7 +13,8 @@ app = FastAPI(
     description="Backend API for the AI Multi-Asset Trading Platform",
     version="0.1.0"
 )
-
+# Modified routes for market_data_router
+app.include_router(market_data_router)
 
 app.add_middleware(
     CORSMiddleware,
