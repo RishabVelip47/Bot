@@ -1,7 +1,11 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+load_dotenv(BASE_DIR / ".env", override=True)
 
 
 APP_NAME = os.getenv(
@@ -18,3 +22,7 @@ DEBUG = os.getenv(
     "DEBUG",
     "true"
 ).lower() == "true"
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL"
+)
