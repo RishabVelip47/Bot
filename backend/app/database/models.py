@@ -24,6 +24,10 @@ class MarketData(Base):
         Float,
         nullable=False
     )
+    high:Mapped[float]=mapped_column(
+        Float,
+        nullable=False
+    )
     low:Mapped[float]=mapped_column(
         Float,
         nullable=False
@@ -32,7 +36,7 @@ class MarketData(Base):
         Float,
         nullable=False
     )
-    Volume:Mapped[float]=mapped_column(
+    volume:Mapped[float]=mapped_column(
         Float,
         nullable=False
     )
