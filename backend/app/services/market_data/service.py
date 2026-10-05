@@ -11,7 +11,7 @@ class MarketDataService:
         self.provider = YFinanceProvider()
         self.repsoitory = MarketDataRepository(db)
 
-    def get_historical_data(
+    def fetch_historical_data(
         self,
         symbol:str,
         start:datetime,
@@ -32,7 +32,7 @@ class MarketDataService:
                 volume = row.volume)
                 for row in data
                 ]
-        self.repsoitory.save(records)
+        self.repsoitory.save_many(records)
 
     def get_stored_data(
         self,
