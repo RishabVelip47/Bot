@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
+from datetime import datetime
 from app.database.models import MarketData
 
 
@@ -40,4 +40,19 @@ class MarketDataRepository:
 
         result = self.db.execute(statement)
 
+        return list(result.scalars().all())
+    
+    def get_by_symbol_and_range(
+        self,
+        symbol:str,
+        start:datetime,
+        end:datetime,
+    )->list[MarketData]:
+        statement = (
+            select(MarketData).where(MarketData.symbol==symbol,
+            MarketData.timestamp >= start,
+            MarketData.timestamp <end)
+            .order_by(MarketData.timestamp)
+        )
+        result = self.db.execute(statement)
         return list(result.scalars().all())

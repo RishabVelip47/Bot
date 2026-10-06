@@ -19,7 +19,7 @@ def get_market_data(
 ):
     service = MarketDataService(db)
 
-    data = service.fetch_historical_data(symbol=symbol,
+    data = service.get_market_data(symbol=symbol,
      start=start,
      end = end,)
     service.save_historical_data(data)
