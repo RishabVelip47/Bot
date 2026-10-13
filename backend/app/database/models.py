@@ -1,12 +1,18 @@
-from datetime import datetime
-from sqlalchemy import(
-    String,DateTime,Float,BigInteger,UniqueConstraint
+from datetime import datetime, date
+
+from sqlalchemy import (
+    String,
+    DateTime,
+    Float,
+    Date,
+    UniqueConstraint,
 )
-from sqlalchemy.orm import Mapped,mapped_column
+
+from sqlalchemy.orm import Mapped, mapped_column
 from app.database.connection import Base
 
 class MarketData(Base):
-    __tablename__ = "market_data"
+    __tablename__ = "market_data_coverage"
     id:Mapped[int] = mapped_column(
         primary_key =True,
         autoincrement = True
@@ -44,5 +50,5 @@ class MarketData(Base):
         UniqueConstraint(
             "symbol",
             "timestamp",
-            name = "uq_market_data_symbol_timestamp"),
+            name = "uq_market_data_coverage_range"),
     )

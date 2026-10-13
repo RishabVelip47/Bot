@@ -7,6 +7,9 @@ from app.database.repositories.market_data_repository import MarketDataRepositor
 from app.services.market_data.models import OHLCV
 from app.services.market_data.validator import validate_ohlcv
 from app.services.market_data.yfinance_provider import YFinanceProvider
+from app.database.repositories.market_data_coverage_repository import (
+    MarketDataCoverageRepository,
+)
 
 
 class MarketDataService:
@@ -14,43 +17,53 @@ class MarketDataService:
     def __init__(self, db: Session):
         self.provider = YFinanceProvider()
         self.repository = MarketDataRepository(db)
+        self.coverage_repository = MarketDataCoverageRepository(db)
 
     def get_market_data(
-        self,
-        symbol: str,
-        start: datetime,
-        end: datetime,
-    ) -> list[OHLCV]:
+    self,
+    symbol: str,
+    start: datetime,
+    end: datetime,
+) -> list[OHLCV]:
 
         stored_data = self.repository.get_by_symbol_and_range(
-            symbol=symbol,
-            start=start,
-            end=end,
-        )
+        symbol=symbol,
+        start=start,
+        end=end,
+    )
 
-        if stored_data:
+        earliest, latest = self.repository.get_date_bounds(symbol)
+
+    # Return cached data if the stored range covers the request.
+        if (
+        stored_data
+        and earliest is not None
+        and latest is not None
+        and earliest <= start
+        and latest >= end
+    ):
             print(
-                f"DATA SOURCE: PostgreSQL | "
-                f"{symbol} | {len(stored_data)} records"
+            f"DATA SOURCE: PostgreSQL | "
+            f"{symbol} | {len(stored_data)} records"
             )
             return self._to_ohlcv(stored_data)
 
+    # Otherwise, fetch and save the requested range.
         print(f"DATA SOURCE: Yahoo Finance | {symbol}")
 
         data = self.provider.get_historical_data(
-            symbol=symbol,
-            start=start,
-            end=end,
-        )
+        symbol=symbol,
+        start=start,
+        end=end,
+    )
 
         data = validate_ohlcv(data)
-
         self.save_historical_data(data)
 
         stored_data = self.repository.get_by_symbol_and_range(
-            symbol=symbol,
-            start=start,
-            end=end,
+        symbol=symbol,
+        start=start,
+        end=end,
         )
 
         return self._to_ohlcv(stored_data)

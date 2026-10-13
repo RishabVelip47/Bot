@@ -56,3 +56,14 @@ class MarketDataRepository:
         )
         result = self.db.execute(statement)
         return list(result.scalars().all())
+        
+    def get_date_bounds(self, symbol: str):
+        from sqlalchemy import func
+
+        result = self.db.execute(
+        select(
+            func.min(MarketData.timestamp),
+            func.max(MarketData.timestamp),
+        ).where(MarketData.symbol == symbol)
+    )
+        return result.one()
